@@ -87,7 +87,7 @@
     el.innerHTML = '' +
       '<section class="hero">' +
         '<div class="hero-left">' +
-          '<span class="world-badge"><span class="ball"></span>HASUNG POKEMON WORLD</span>' +
+          '<span class="world-badge"><span class="ball"></span>포켓몬 월드</span>' +
           '<p class="hero-date" id="hero-date">' + ui.dateKo(now) + "</p>" +
           '<div class="clock" id="clock">' +
             '<span class="clock-ampm" id="clock-ampm">' + cp.ampm + "</span>" +

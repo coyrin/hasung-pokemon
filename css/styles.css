@@ -319,14 +319,15 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--pixel);
-  font-size: 11px;
-  letter-spacing: 0.06em;
+  font-size: clamp(12px, 1.3vw, 14px);
+  font-weight: 900;
+  letter-spacing: -0.01em;
   color: #fff;
   background: rgba(30, 60, 90, 0.55);
-  padding: 6px 10px;
+  padding: 5px 11px;
   border-radius: 8px;
   align-self: flex-start;
+  white-space: nowrap;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
 }
 .world-badge .ball { width: 16px; height: 16px; border-width: 2px; }
@@ -725,7 +726,7 @@ main {
 /* ---------- 공부 ---------- */
 .study-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
 .study-card {
