@@ -1,0 +1,17 @@
+{
+  "name": "하성의 포켓몬 월드",
+  "short_name": "포켓몬 월드",
+  "description": "하성의 아침 루틴, 공부, 스티커를 모으는 포켓몬 대시보드",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f8ea",
+  "theme_color": "#bfe3ff",
+  "icons": [
+    { "src": "icons/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

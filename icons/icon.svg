@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9dd6ff"/>
+      <stop offset="1" stop-color="#e3f4ff"/>
+    </linearGradient>
+    <linearGradient id="ball" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff6a6a"/>
+      <stop offset="1" stop-color="#e33a3a"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#sky)"/>
+  <g fill="#ffffff" opacity="0.95">
+    <rect x="56" y="66" width="104" height="28" rx="14"/>
+    <rect x="86" y="48" width="56" height="24" rx="12"/>
+    <rect x="352" y="96" width="96" height="26" rx="13"/>
+    <rect x="380" y="78" width="52" height="22" rx="11"/>
+  </g>
+  <circle cx="424" cy="72" r="34" fill="#ffe27a"/>
+  <rect x="0" y="392" width="512" height="120" fill="#a9e07a"/>
+  <path d="M0 392h512v22H0z" fill="#8fd06a"/>
+  <g transform="translate(256 268)">
+    <circle r="148" fill="#ffffff" stroke="#232833" stroke-width="14"/>
+    <path d="M-148 0a148 148 0 0 1 296 0z" fill="url(#ball)" stroke="#232833" stroke-width="14" stroke-linejoin="round"/>
+    <rect x="-152" y="-18" width="304" height="36" fill="#232833"/>
+    <circle r="56" fill="#ffffff" stroke="#232833" stroke-width="14"/>
+    <circle r="26" fill="#ffffff" stroke="#232833" stroke-width="10"/>
+    <circle r="26" fill="#d8ecff"/>
+    <circle cx="-108" cy="-72" r="22" fill="#ffffff" opacity="0.55"/>
+  </g>
+  <g fill="#ffd23f" stroke="#d9a400" stroke-width="4">
+    <path d="M96 150l10 24 24 10-24 10-10 24-10-24-24-10 24-10z"/>
+    <path d="M392 330l8 20 20 8-20 8-8 20-8-20-20-8 20-8z"/>
+  </g>
+</svg>
