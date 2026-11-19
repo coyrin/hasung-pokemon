@@ -56,6 +56,7 @@ html, body {
 body {
   font-family: var(--font);
   color: var(--ink);
+  word-break: keep-all;
   background-color: var(--paper);
   background-image:
     radial-gradient(circle at 12% 18%, rgba(205, 235, 159, 0.55) 0 2px, transparent 2px),
@@ -480,11 +481,12 @@ main {
   margin: 0;
 }
 .depart-big {
-  font-size: clamp(26px, 3.6vw, 40px);
+  font-size: clamp(24px, 2.7vw, 34px);
   font-weight: 900;
   letter-spacing: -0.04em;
   margin: 2px 0 0;
-  line-height: 1.15;
+  line-height: 1.2;
+  word-break: keep-all;
 }
 .depart-big .num { color: var(--green); font-size: 1.12em; }
 .depart-big.done { color: #2f6ff0; }
@@ -610,7 +612,8 @@ main {
   z-index: 2;
 }
 .routine .rmon { position: absolute; right: 8px; top: 6px; z-index: 2; }
-.routine .rart { margin: 26px 0 6px; width: 100%; display: grid; place-items: center; }
+.routine .rart { margin: 30px 0 6px; width: 100%; display: grid; place-items: center; }
+.routine .rart svg { width: clamp(104px, 10.5vw, 150px); height: auto; }
 .routine .rname { font-size: clamp(19px, 2vw, 24px); font-weight: 900; letter-spacing: -0.03em; }
 .routine .rstate { font-size: 12.5px; font-weight: 800; color: var(--ink-soft); }
 .routine .rcheck {
@@ -663,7 +666,8 @@ main {
 .family-card .who::before { content: ""; width: 5px; height: 16px; border-radius: 3px; background: #2f6ff0; }
 .family-card.mom .who::before { background: #f0729b; }
 .family-card .msg { font-size: clamp(16px, 1.8vw, 20px); font-weight: 900; letter-spacing: -0.02em; line-height: 1.35; }
-.family-card .scene { font-size: 30px; line-height: 1; }
+.family-card .scene { font-size: 40px; line-height: 1; }
+.family-card .scene svg { width: 92px; height: auto; }
 
 /* ---------- 할 일 ---------- */
 .task-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }

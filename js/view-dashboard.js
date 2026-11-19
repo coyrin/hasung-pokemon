@@ -67,7 +67,7 @@
       '<button class="routine' + (done ? " is-done" : "") + '" type="button" data-task="' + ui.esc(task.id) + '">' +
         '<span class="rnum">' + (idx + 1) + "</span>" +
         (idx === 0 ? '<span class="rbadge">같이 하자!</span>' : "") +
-        '<span class="rmon">' + ui.spriteHtml(mon, 44) + "</span>" +
+        '<span class="rmon">' + ui.spriteHtml(mon, 54) + "</span>" +
         '<span class="rart">' + HD.ART.byId(task.id) + "</span>" +
         '<span class="rname">' + ui.esc(task.label) + "</span>" +
         '<span class="rstate">' + (done ? "다 했어요!" : "터치해서 완료") + "</span>" +
