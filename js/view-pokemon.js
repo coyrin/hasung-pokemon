@@ -85,7 +85,7 @@
 
   function villagerHtml(rec, slot) {
     var mon = HD.byId(rec.id);
-    var size = Math.round(58 * slot.s);
+    var size = Math.round(76 * slot.s);
     return '' +
       '<div class="villager" style="left:' + slot.x + "%;top:" + slot.y + "%;animation-delay:" + (slot.x / 40).toFixed(2) + 's">' +
         ui.spriteHtml(mon, size) +

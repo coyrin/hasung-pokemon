@@ -152,7 +152,7 @@
     wrap.className = "modal-inner";
     wrap.innerHTML =
       '<div class="modal-backdrop" data-close="1"></div>' +
-      '<div class="modal" role="dialog" aria-modal="true" aria-label="' + esc(cfg.title || "창") + '">' +
+      '<div class="modal' + (cfg.size === "sm" ? " sm" : "") + '" role="dialog" aria-modal="true" aria-label="' + esc(cfg.title || "창") + '">' +
         '<div class="modal-head">' +
           '<h2>' + esc(cfg.title || "") + "</h2>" +
           '<button class="modal-close" type="button" aria-label="닫기" data-close="1">✕</button>' +

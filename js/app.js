@@ -20,11 +20,7 @@
       '<button class="btn primary" type="button" data-close="1" style="min-width:180px;margin-top:6px">좋아! ⭐</button>';
     ui.confetti(34);
     HD.sound.sticker();
-    return ui.modal({
-      title: "스티커를 받았어요!",
-      body: body,
-      onClose: function () { if (after) setTimeout(after, 120); }
-    });
+    ui.modal({ title: "스티커를 받았어요!", body: body, size: "sm", onClose: function () { if (after) setTimeout(after, 120); } });
   }
 
   function showHatch(mon) {
@@ -39,7 +35,7 @@
       '<button class="btn blue" type="button" data-close="1" style="min-width:180px;margin-top:6px">마을에 놀러 가기 🏡</button>';
     ui.confetti(40);
     HD.sound.sticker();
-    ui.modal({ title: "새 포켓몬!", body: body });
+    ui.modal({ title: "새 포켓몬!", body: body, size: "sm" });
   }
 
   function giveSticker(reason, kind, opts) {
@@ -50,7 +46,7 @@
       ui.confetti(26);
       ui.toast("스티커 +1장 · 모두 " + res.stickers + "장", { sticker: true });
     }
-    if (res.hatched.length) {
+    if (res.hatched.length && !o.noHatch) {
       setTimeout(function () { showHatch(res.hatched[0]); }, o.silent ? 400 : 900);
     }
     return res;
@@ -70,7 +66,7 @@
       if (HD.store.morningDone() >= HD.store.morningTotal() && HD.store.morningTotal() > 0 && !st.today.morningReward) {
         HD.store.markReward("morning");
         st.today.morningRewardAt = Date.now();
-        var res = giveSticker("아침 할 일을 다 했어요", "morning", { silent: true });
+        var res = giveSticker("아침 할 일을 다 했어요", "morning", { silent: true, noHatch: true });
         actions.refresh();
         showReward(25, "피카츄 스티커 받았어!", "아침 할 일을 다 했어요 · 스티커 " + res.stickers + "장", function () {
           if (res.hatched.length) showHatch(res.hatched[0]);
@@ -91,7 +87,7 @@
       var st = HD.store.get();
       if (HD.store.eveningDone() >= HD.store.eveningTotal() && HD.store.eveningTotal() > 0 && !st.today.eveningReward) {
         HD.store.markReward("evening");
-        var res = giveSticker("저녁 할 일을 다 했어요", "evening", { silent: true });
+        var res = giveSticker("저녁 할 일을 다 했어요", "evening", { silent: true, noHatch: true });
         actions.refresh();
         showReward(1, "이상해씨 스티커 받았어!", "저녁 할 일을 다 했어요 · 스티커 " + res.stickers + "장", function () {
           if (res.hatched.length) showHatch(res.hatched[0]);
@@ -109,7 +105,7 @@
       var sub = HD.store.settings().study.filter(function (s) { return s.id === id; })[0];
       if (!sub) return;
       HD.store.markStudyReward(id);
-      var res = giveSticker("공부를 다 했어요 · " + sub.name, "study", { silent: true });
+      var res = giveSticker("공부를 다 했어요 · " + sub.name, "study", { silent: true, noHatch: true });
       actions.refresh();
       var mins = seconds ? Math.max(1, Math.round(seconds / 60)) : 0;
       showReward(sub.stickerId, HD.byId(sub.stickerId).name + " 스티커 받았어!",

@@ -68,7 +68,7 @@ window.HD = window.HD || {};
       { id: "top",   name: "최상위사고력", color: "#2f6ff0", plot: "생각", stickerId: 133,
         note: "오늘 2쪽 · 규칙 찾기 놀이", emoji: "🔴🔵🔴🔵" },
       { id: "wonri", name: "원리셈",       color: "#7a5cf0", plot: "수",   stickerId: 175,
-        note: "오늘 1장 · 1부터 10까지 세기", emoji: "1️⃣2️⃣3️⃣➕" },
+        note: "오늘 1장 · 1부터 10까지 세기", emoji: "1 2 3 ➕" },
       { id: "s1031", name: "1031",         color: "#d9792b", plot: "생각", stickerId: 54,
         note: "오늘 2쪽 · 모양 분류하기", emoji: "🔺⚪⬛" },
       { id: "plato", name: "플라토",       color: "#2fa74e", plot: "도형", stickerId: 7,

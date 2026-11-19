@@ -210,8 +210,8 @@
       }
     });
 
-    // 저장
-    body.querySelector("#btn-save-settings").addEventListener("click", function () {
+    // 저장 (버튼은 모달 foot에 있으므로 모달 전체에서 찾는다)
+    m.el.querySelector("#btn-save-settings").addEventListener("click", function () {
       var departure = body.querySelector("#set-departure").value || "08:28";
       var cleanMinutes = Number(body.querySelector("#set-clean").value) || 10;
       var soundOn = body.querySelector("#set-sound").value === "on";
