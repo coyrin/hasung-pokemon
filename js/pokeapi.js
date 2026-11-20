@@ -26,6 +26,7 @@
 
   var mem = null;      // 메모리 캐시
   var pending = {};    // 진행 중인 요청
+  var SCHEMA = 2;      // 캐시 모양이 바뀌면 올린다(예전 것으면 다시 받음)
 
   function esc(s) {
     return String(s == null ? "" : s)
@@ -73,6 +74,15 @@
     return out;
   }
 
+  // 한국어가 없을 때(신작 포켓몬)를 위한 영어 마지막 항목
+  function pickEn(list) {
+    var out = null;
+    (list || []).forEach(function (item) {
+      if (item && item.language && item.language.name === "en") out = item;
+    });
+    return out;
+  }
+
   function fetchJson(url) {
     return fetch(url, { mode: "cors", credentials: "omit" }).then(function (res) {
       if (!res.ok) throw new Error("HTTP " + res.status);
@@ -82,7 +92,8 @@
 
   function buildRecord(id, p, s) {
     var rec = {
-      id: id, name: "", genus: "", flavor: "", types: [],
+      v: SCHEMA,
+      id: id, name: "", genus: "", flavor: "", flavorEn: "", types: [],
       height: 0, weight: 0, art: "", sprite: "", cry: "", at: Date.now()
     };
 
@@ -95,6 +106,12 @@
 
     var koFlavor = s ? pickKo(s.flavor_text_entries) : null;
     if (koFlavor && koFlavor.flavor_text) rec.flavor = clean(koFlavor.flavor_text);
+
+    // 한국어 설명이 아직 없는 포켓몬은 영어 설명을 따로 남긴다
+    if (!rec.flavor) {
+      var enFlavor = s ? pickEn(s.flavor_text_entries) : null;
+      if (enFlavor && enFlavor.flavor_text) rec.flavorEn = clean(enFlavor.flavor_text);
+    }
 
     if (p) {
       rec.height = Math.round(Number(p.height) || 0) / 10;
@@ -122,7 +139,7 @@
     id = Number(id);
     var c = cache();
     if (!id) return Promise.reject(new Error("잘못된 도감 번호"));
-    if (c[id]) return Promise.resolve(c[id]);
+    if (c[id] && c[id].v === SCHEMA) return Promise.resolve(c[id]);
     if (pending[id]) return pending[id];
 
     var p = Promise.all([
@@ -146,7 +163,8 @@
 
   function cached(id) {
     var rec = cache()[Number(id)];
-    return rec || null;
+    if (!rec || rec.v !== SCHEMA) return null;
+    return rec;
   }
 
   function name(id) {

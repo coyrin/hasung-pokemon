@@ -1,6 +1,6 @@
 /* 하성의 포켓몬 월드 — 오프라인 캐시 (network-first) */
-var CACHE = "hasung-pokemon-v3";
-var V = "?v=3"; // index.html의 파일 버전과 같게 맞춘다
+var CACHE = "hasung-pokemon-v4";
+var V = "?v=4"; // index.html의 파일 버전과 같게 맞춘다
 var ASSETS = [
   "./",
   "./index.html",

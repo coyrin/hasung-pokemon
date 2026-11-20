@@ -38,6 +38,17 @@
 
     function shownName() { return (rec && rec.name) || name; }
 
+    function flavorHtml() {
+      if (rec && rec.flavor) return '<p class="hatch-flavor">' + ui.esc(rec.flavor) + "</p>";
+      if (rec && rec.flavorEn) {
+        return '<p class="hatch-flavor en">' + ui.esc(rec.flavorEn) +
+          '<span class="dex-note">한국어 설명이 아직 없어서 영어로 보여줘요</span>' + "</p>";
+      }
+      if (rec) return '<p class="hatch-flavor muted">도감 설명이 아직 없어요.</p>';
+      if (failed) return "";
+      return '<p class="hatch-flavor muted">이름과 도감 설명을 불러오는 중…</p>';
+    }
+
     function paint() {
       var nm = shownName();
       var art = (rec && rec.art) ? rec.art : null;
@@ -50,8 +61,7 @@
         '<div class="rp-title">' + (nm ? ui.esc(nm) + "를 만났어!" : "새 친구를 만났어!") + "</div>" +
         (rec && rec.genus ? '<span class="dex-genus">' + ui.esc(rec.genus) + "</span>" : "") +
         (rec && rec.types && rec.types.length ? '<div class="dex-types center">' + HD.pokeapi.typesHtml(rec.types) + "</div>" : "") +
-        (rec && rec.flavor ? '<p class="hatch-flavor">' + ui.esc(rec.flavor) + "</p>"
-          : (failed ? "" : '<p class="hatch-flavor muted">이름과 도감 설명을 불러오는 중…</p>')) +
+        flavorHtml() +
         '<div class="rp-sub">포켓몬 마을에 새 친구가 생겼어요</div>' +
         '<div class="dex-actions center">' +
           '<button class="btn small" type="button" data-act="cry"' + ((rec && rec.cry) ? "" : " disabled") + ">🔊 울음소리</button>" +

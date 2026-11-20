@@ -116,9 +116,19 @@
         "<span>몸무게 " + rec.weight.toFixed(1) + "kg</span>" +
         "</div>";
     }
-    var flavor = (rec && rec.flavor) ? rec.flavor
-      : (failed ? "도감 설명을 불러오지 못했어요. 인터넷이 연결되면 다시 보여줄게요."
-                : "도감 설명을 불러오는 중이에요…");
+    var flavor;
+    if (rec && rec.flavor) {
+      flavor = '<p class="dex-flavor">' + ui.esc(rec.flavor) + "</p>";
+    } else if (rec && rec.flavorEn) {
+      flavor = '<p class="dex-flavor en">' + ui.esc(rec.flavorEn) +
+        '<span class="dex-note">한국어 설명이 아직 없어서 영어로 보여줘요</span>' + "</p>";
+    } else if (rec) {
+      flavor = '<p class="dex-flavor">도감 설명이 아직 없어요.</p>';
+    } else if (failed) {
+      flavor = '<p class="dex-flavor">도감 설명을 불러오지 못했어요. 인터넷이 연결되면 다시 보여줄게요.</p>';
+    } else {
+      flavor = '<p class="dex-flavor">도감 설명을 불러오는 중이에요…</p>';
+    }
     return '' +
       '<div class="dex-top">' +
         '<div class="dex-art">' +
@@ -136,7 +146,7 @@
           "</div>" +
         "</div>" +
       "</div>" +
-      '<p class="dex-flavor">' + ui.esc(flavor) + "</p>" +
+      flavor +
       '<p class="dex-credit">자료: PokeAPI (pokeapi.co) · 집에서 쓰는 비영리 학습용</p>';
   }
 
@@ -170,7 +180,8 @@
       var act = btn.getAttribute("data-act");
       if (act === "cry") playCry();
       else if (act === "speak") {
-        ui.speak((rec && rec.flavor) ? rec.name + "! " + rec.flavor : name + "!", "ko-KR");
+        var say = (rec && rec.flavor) ? rec.flavor : "";
+        ui.speak(say ? rec.name + "! " + say : name + " " + ((rec && rec.genus) || "") + "!", "ko-KR");
       }
     });
 
