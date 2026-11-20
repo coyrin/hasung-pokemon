@@ -1,5 +1,5 @@
 /* 하성의 포켓몬 월드 — 오프라인 캐시 (network-first) */
-var CACHE = "hasung-pokemon-v1";
+var CACHE = "hasung-pokemon-v2";
 var ASSETS = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ var ASSETS = [
   "./js/store.js",
   "./js/ui.js",
   "./js/sound.js",
+  "./js/pokeapi.js",
   "./js/weather.js",
   "./js/view-dashboard.js",
   "./js/view-tasks.js",

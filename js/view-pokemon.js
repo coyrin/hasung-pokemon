@@ -84,13 +84,133 @@
   }
 
   function villagerHtml(rec, slot) {
-    var mon = HD.byId(rec.id);
+    var mon = { id: rec.id, name: monName(rec), emoji: HD.byId(rec.id).emoji };
     var size = Math.round(76 * slot.s);
     return '' +
-      '<div class="villager" style="left:' + slot.x + "%;top:" + slot.y + "%;animation-delay:" + (slot.x / 40).toFixed(2) + 's">' +
+      '<div class="villager" data-pid="' + rec.id + '" style="left:' + slot.x + "%;top:" + slot.y + "%;animation-delay:" + (slot.x / 40).toFixed(2) + 's" role="button" tabindex="0" aria-label="' + ui.esc(mon.name) + ' 도감 보기">' +
         ui.spriteHtml(mon, size) +
         '<span class="vl-label">' + ui.esc(mon.name) + "</span>" +
       "</div>";
+  }
+
+  function monName(rec) {
+    var cached = HD.pokeapi ? HD.pokeapi.cached(rec.id) : null;
+    if (cached && cached.name) return cached.name;
+    if (rec.name) return rec.name;
+    return HD.byId(rec.id).name;
+  }
+
+  function pad3(n) {
+    var s = String(Number(n) || 0);
+    while (s.length < 3) s = "0" + s;
+    return s;
+  }
+
+  /* ---------- 도감 카드(PokeAPI) ---------- */
+  function dexHtml(id, rec, name, failed) {
+    var art = (rec && rec.art) ? rec.art : (HD.SPRITE_BASE + id + ".png");
+    var facts = "";
+    if (rec) {
+      facts = '<div class="dex-size">' +
+        "<span>키 " + rec.height.toFixed(1) + "m</span>" +
+        "<span>몸무게 " + rec.weight.toFixed(1) + "kg</span>" +
+        "</div>";
+    }
+    var flavor = (rec && rec.flavor) ? rec.flavor
+      : (failed ? "도감 설명을 불러오지 못했어요. 인터넷이 연결되면 다시 보여줄게요."
+                : "도감 설명을 불러오는 중이에요…");
+    return '' +
+      '<div class="dex-top">' +
+        '<div class="dex-art">' +
+          '<img src="' + ui.esc(art) + '" alt="' + ui.esc(name) + '" data-pid="' + id + '" data-emoji="' + ui.esc(HD.byId(id).emoji) + '" data-step="0" decoding="async" onerror="HD.ui.artFail(this)">' +
+        "</div>" +
+        '<div class="dex-facts">' +
+          '<div class="dex-num">#' + pad3(id) + "</div>" +
+          '<div class="dex-name">' + ui.esc(name) + "</div>" +
+          (rec && rec.genus ? '<span class="dex-genus">' + ui.esc(rec.genus) + "</span>" : "") +
+          (rec && rec.types && rec.types.length ? '<div class="dex-types">' + HD.pokeapi.typesHtml(rec.types) + "</div>" : "") +
+          facts +
+          '<div class="dex-actions">' +
+            '<button class="btn blue small" type="button" data-act="cry"' + ((rec && rec.cry) ? "" : " disabled") + ">🔊 울음소리</button>" +
+            '<button class="btn small" type="button" data-act="speak">🗣️ 읽어주기</button>' +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+      '<p class="dex-flavor">' + ui.esc(flavor) + "</p>" +
+      '<p class="dex-credit">자료: PokeAPI (pokeapi.co) · 집에서 쓰는 비영리 학습용</p>';
+  }
+
+  function openDex(id, fallbackName) {
+    id = Number(id);
+    var cached = HD.pokeapi ? HD.pokeapi.cached(id) : null;
+    var rec = cached;
+    var name = (cached && cached.name) || fallbackName || HD.byId(id).name;
+    var failed = false;
+
+    var body = document.createElement("div");
+    body.className = "dex-card";
+
+    function paint() {
+      body.innerHTML = dexHtml(id, rec, name, failed);
+    }
+    paint();
+
+    function playCry() {
+      if (!rec || !rec.cry) { ui.toast("울음소리를 아직 못 가져왔어요"); HD.sound.pop(); return; }
+      HD.pokeapi.playCry(rec.cry).then(null, function () {
+        // iPadOS Safari가 ogg를 못 틀면 읽어주기·효과음으로 대신한다
+        HD.sound.pop();
+        ui.speak(rec.name + " " + (rec.genus || ""), "ko-KR");
+      });
+    }
+
+    body.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-act]") : null;
+      if (!btn) return;
+      var act = btn.getAttribute("data-act");
+      if (act === "cry") playCry();
+      else if (act === "speak") {
+        ui.speak((rec && rec.flavor) ? rec.name + "! " + rec.flavor : name + "!", "ko-KR");
+      }
+    });
+
+    ui.modal({ title: "포켓몬 도감", body: body });
+
+    if (!cached && HD.pokeapi) {
+      HD.pokeapi.get(id).then(function (r) {
+        rec = r;
+        name = r.name || name;
+        paint();
+        if (HD.store.setPokemonName) HD.store.setPokemonName(id, r.name);
+      }, function () {
+        failed = true;
+        paint();
+      });
+    }
+  }
+
+  /* ---------- 이름을 모르는 마을 친구 이름 채우기 ---------- */
+  var warmed = {};
+  function warmNames(coll) {
+    if (!HD.pokeapi) return;
+    var need = [];
+    (coll || []).forEach(function (c) {
+      var id = Number(c.id);
+      if (!id || warmed[id]) return;
+      warmed[id] = true;
+      if (HD.pokeapi.cached(id)) return;
+      if (HD.byId(id).name !== "포켓몬") return; // 기본 27종은 이름을 이미 안다
+      need.push(id);
+    });
+    if (!need.length) return;
+    var queue = need.slice(0, 3);
+    var left = queue.length;
+    queue.forEach(function (id) {
+      HD.pokeapi.get(id).then(function () {
+        left -= 1;
+        if (left <= 0) render();
+      }, function () { left -= 1; });
+    });
   }
 
   function relDate(ts) {
@@ -150,18 +270,23 @@
 
     var frame = el.querySelector(".village-frame");
     if (frame) {
-      // 터치하면 포켓몬 이름을 읽어준다
+      // 터치하면 이름을 읽어주고, PokeAPI 도감 카드를 띄운다
       frame.addEventListener("click", function (e) {
-        var v = e.target.closest(".villager");
+        var v = e.target && e.target.closest ? e.target.closest(".villager") : null;
         if (!v) return;
-        var name = v.querySelector(".vl-label");
-        if (name) {
-          ui.speak(name.textContent + "!", "ko-KR");
-          var r = v.getBoundingClientRect();
-          ui.sparkleAt(r.left + r.width / 2, r.top, 5);
-        }
+        var id = Number(v.getAttribute("data-pid"));
+        var nameEl = v.querySelector(".vl-label");
+        var name = nameEl ? nameEl.textContent : "";
+        if (!id) return;
+        HD.sound.pop();
+        if (name) ui.speak(name + "!", "ko-KR");
+        var r = v.getBoundingClientRect();
+        ui.sparkleAt(r.left + r.width / 2, r.top, 5);
+        openDex(id, name);
       });
     }
+
+    warmNames(st.collection);
   }
 
   HD.views = HD.views || {};

@@ -36,11 +36,16 @@ window.HD = window.HD || {};
     { id: 231, name: "코코리",   emoji: "🐘" },
     { id: 246, name: "애버라스", emoji: "🪨" }
   ];
+  // 부화 풀: PokeAPI 전국도감 1~1025번 (pokeapi.js의 MAX_ID와 같다)
+  HD.MAX_DEX_ID = 1025;
+
+  // 기본 27종에 없으면 PokeAPI에서 받아 캐시해 둔 한국어 이름을 쓴다
   HD.byId = function (id) {
     for (var i = 0; i < HD.POKEDEX.length; i++) {
       if (HD.POKEDEX[i].id === id) return HD.POKEDEX[i];
     }
-    return { id: id, name: "포켓몬", emoji: "❔" };
+    var cachedName = (HD.pokeapi && HD.pokeapi.name) ? HD.pokeapi.name(id) : null;
+    return { id: id, name: cachedName || "포켓몬", emoji: "❔" };
   };
 
   HD.SPRITE_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";

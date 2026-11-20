@@ -213,7 +213,7 @@
         guard++;
         state.egg.progress -= state.egg.need;
         var mon = pickNewPokemon();
-        state.collection.push({ id: mon.id, at: Date.now(), eggNo: state.egg.no });
+        state.collection.push({ id: mon.id, at: Date.now(), eggNo: state.egg.no, name: mon.name || "" });
         hatched.push(mon);
         state.egg.no += 1;
         state.egg.need = store.needFor(state.egg.no);
@@ -311,6 +311,17 @@
       emit();
     },
 
+    /* ---------- 컬렉션 이름 보정 (PokeAPI 한글 이름) ---------- */
+    setPokemonName: function (id, name) {
+      if (!name) return false;
+      var changed = false;
+      state.collection.forEach(function (c) {
+        if (Number(c.id) === Number(id) && c.name !== name) { c.name = name; changed = true; }
+      });
+      if (changed) { writeStorage(); emit(); }
+      return changed;
+    },
+
     /* ---------- 초기화 ---------- */
     resetToday: function () {
       state.today = newDay();
@@ -325,13 +336,28 @@
   };
 
   function pickNewPokemon() {
-    var owned = {};
-    state.collection.forEach(function (c) { owned[c.id] = true; });
-    var pool = HD.POKEDEX.filter(function (p) { return !owned[p.id]; });
+    var owned = state.collection.map(function (c) { return c.id; });
+
+    // PokeAPI 전국도감(1~1025) 중 아직 마을에 없는 포켓몬
+    if (HD.pokeapi && HD.pokeapi.pickHatchId) {
+      var id = HD.pokeapi.pickHatchId(owned);
+      if (id) {
+        var known = HD.byId(id);
+        var cachedName = HD.pokeapi.name(id);
+        return {
+          id: id,
+          name: cachedName || (known.name !== "포켓몬" ? known.name : ""),
+          emoji: known.emoji
+        };
+      }
+    }
+
+    // 폴백: 기존 27종 풀
+    var ownedMap = {};
+    owned.forEach(function (x) { ownedMap[x] = true; });
+    var pool = HD.POKEDEX.filter(function (p) { return !ownedMap[p.id]; });
     if (!pool.length) pool = HD.POKEDEX.slice();
-    // 흔한 포켓몬 위주로 (가끔 희귀)
-    var pick = pool[Math.floor(Math.random() * pool.length)];
-    return pick;
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   HD.store = store;

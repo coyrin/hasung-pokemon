@@ -8,7 +8,7 @@
 | 탭 | 내용 |
 | --- | --- |
 | **대시보드** | 픽셀 시계·날짜, 실시간 날씨/미세먼지(Open-Meteo), 유치원 출발까지 남은 시간과 피카츄 진행 바, 아침 루틴 3개(세수/양치 · 밥먹기 · 옷입기), 엄마·아빠 한마디 |
-| **포켓몬** | 스티커를 모아 포켓몬 알 부화(3장 → 5장 반복), 포켓몬 마을, 최근 스티커 기록 |
+| **포켓몬** | 스티커를 모아 포켓몬 알 부화(3장 → 5장 반복), 포켓몬 마을, 최근 스티커 기록, 마을 친구를 탭하면 **PokeAPI 도감 카드**(공식 일러스트 · 한글 이름 · 분류 · 타입 · 키/몸무게 · 한글 설명 · 울음소리) |
 | **하성 공부** | 최상위사고력 · 원리셈 · 1031 · 플라토 · 한자 5과목, 공부 타이머 + 과목별 연습 퀴즈(읽어주기) |
 | **할 일** | 아침 할 일(대시보드와 동기화) / 저녁 할 일, 다 하면 스티커 |
 | **정리 타이머** | 5·10·15분 카운트다운, 마릴이 걸어가는 진행 바, `정리 끝! ✓` |
@@ -27,6 +27,25 @@
 날짜가 바뀌면 **오늘 루틴만** 자동으로 초기화되고, 스티커·도감·설정은 그대로 남는다.
 부모 설정에서 `오늘 루틴 초기화` / `전부 처음으로`로 직접 초기화할 수 있다.
 
+## PokeAPI 연동 (도감 정보)
+
+- [PokeAPI v2](https://pokeapi.co/api/v2/) REST API를 직접 호출한다.
+  - `pokemon/{id}` — 도감 번호, 타입, 키·몸무게, 공식 일러스트(`official-artwork`), 도트 스프라이트, 울음소리(`cries.latest`)
+  - `pokemon-species/{id}` — 한국어 이름(`names.ko`), 한국어 분류(`genera.ko`), 한국어 도감 설명(`flavor_text_entries.ko`)
+- 알 부화는 전국도감 **1~1025번** 중 아직 마을에 없는 포켓몬에서 무작위로 나온다.
+- 받아온 한국어 정보는 `localStorage`의 `hd_pokeapi_cache_v1`에 캐시해서, 같은 포켓몬은 인터넷 없이 바로 뜬다(최대 400마리).
+- 인터넷이 없거나 API가 실패하면 기존 27종 도감과 스프라이트·이모지로 조용히 대체된다. 마을 친구를 탭했을 때 설명을 못 받아오면 그렇다고 알려준다.
+- 아이패드 Safari는 `.ogg` 울음소리를 재생하지 못할 수 있다. 그때는 효과음과 읽어주기가 대신한다.
+
+## 가정 내 비영리 사용
+
+이 저장소는 **집에서 가족이 쓰는 비영리 개인 페이지**다. 공개 목적이 없어서 검색에 노출하지 않는다.
+
+- `index.html`의 `<meta name="robots" content="noindex, nofollow">`
+- `robots.txt`의 `User-agent: * / Disallow: /`
+
+PokeAPI와 포켓몬 이름·이미지·캐릭터의 권리는 각 권리자에게 있다(비영리 학습·개인 사용 목적).
+
 ## 개인정보 원칙
 
 - 이름은 `하성`만 쓴다. 성, 전화번호, 집 주소, 유치원 실명은 코드에 넣지 않는다.
@@ -42,11 +61,13 @@ js/data.js                 포켓몬 도감, 기본 설정, 퀴즈, SVG 그림
 js/store.js                localStorage 상태 관리(일자 초기화, 스티커/알)
 js/ui.js                   모달·토스트·색종이·스프라이트 폴백
 js/sound.js                Web Audio 효과음
+js/pokeapi.js              PokeAPI v2 도감 조회 + localStorage 캐시
 js/weather.js              Open-Meteo 날씨·미세먼지 (15분 캐시)
 js/view-*.js               탭별 화면
 js/settings.js             부모 확인 + 부모 설정
 js/app.js                  시작, 탭 이동, 보상 흐름
 sw.js                      오프라인 캐시(네트워크 우선)
+robots.txt                 검색 차단(가정 내 비영리 사용)
 manifest.webmanifest       PWA 설정
 icons/                     홈 화면 아이콘(SVG/PNG)
 fonts/PressStart2P.ttf     픽셀 숫자 폰트(SIL OFL 1.1, fonts/OFL.txt)
@@ -54,5 +75,5 @@ fonts/PressStart2P.ttf     픽셀 숫자 폰트(SIL OFL 1.1, fonts/OFL.txt)
 
 ## 포켓몬 이미지
 
-PokeAPI 공식 스프라이트 CDN을 쓴다(`raw.githubusercontent.com/PokeAPI/sprites`).
-인터넷이 없거나 이미지가 실패하면 자동으로 이모지로 바뀐다. 포켓몬 이름과 캐릭터는 각 권리자에게 있다.
+PokeAPI 공식 스프라이트·일러스트 CDN을 쓴다(`raw.githubusercontent.com/PokeAPI/...`).
+인터넷이 없거나 이미지가 실패하면 자동으로 도트 스프라이트 → 이모지로 바뀐다. 포켓몬 이름과 캐릭터는 각 권리자에게 있다.

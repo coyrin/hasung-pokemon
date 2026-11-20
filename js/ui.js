@@ -54,12 +54,19 @@
   }
 
   /* ---------- 포켓몬 스프라이트 ---------- */
+  // 움직이는 스프라이트(5세대)는 649번까지만 있어서 그 위 번호는 정지 그림을 바로 쓴다
+  function spriteUrl(id) {
+    var n = Number(id) || 0;
+    if (n > 0 && n <= 649) return HD.SPRITE_BASE + "versions/generation-v/black-white/animated/" + n + ".gif";
+    return HD.SPRITE_BASE + n + ".png";
+  }
+
   function spriteHtml(pokemon, size, opts) {
     var o = opts || {};
     var id = pokemon.id;
     var name = pokemon.name || HD.byId(id).name;
     var emoji = pokemon.emoji || HD.byId(id).emoji;
-    var url = HD.SPRITE_BASE + "versions/generation-v/black-white/animated/" + id + ".gif";
+    var url = spriteUrl(id);
     var style = "width:" + size + "px;height:" + size + "px;";
     var cls = "sprite" + (o.className ? " " + o.className : "");
     if (o.bounce) style += "animation:bob 1.3s ease-in-out infinite;";
@@ -85,6 +92,21 @@
     span.style.height = size + "px";
     span.style.fontSize = Math.round(size * 0.8) + "px";
     if (img.parentNode) img.parentNode.replaceChild(span, img);
+  }
+
+  // 도감 카드의 큰 공식 일러스트: 실패하면 정지 스프라이트 → 이모지 순서로
+  function artFail(img) {
+    var step = Number(img.getAttribute("data-step") || 0);
+    if (step === 0) {
+      img.setAttribute("data-step", "1");
+      img.className = "is-sprite";
+      img.src = HD.SPRITE_BASE + (Number(img.getAttribute("data-pid")) || 0) + ".png";
+      return;
+    }
+    var wrap = img.parentNode;
+    if (wrap) {
+      wrap.innerHTML = '<span class="dex-emoji">' + esc(img.getAttribute("data-emoji") || "❔") + "</span>";
+    }
   }
 
   /* ---------- 토스트 ---------- */
@@ -222,7 +244,7 @@
   HD.ui = {
     $: $, $$: $$, esc: esc, pad2: pad2,
     clockParts: clockParts, dateKo: dateKo, timeLabel: timeLabel,
-    spriteHtml: spriteHtml, spriteFail: spriteFail,
+    spriteHtml: spriteHtml, spriteFail: spriteFail, spriteUrl: spriteUrl, artFail: artFail,
     toast: toast, confetti: confetti, sparkleAt: sparkleAt,
     modal: modal, closeAllModals: closeAllModals, speak: speak,
     isSpeaking: function () { return speaking; }

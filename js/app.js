@@ -24,18 +24,69 @@
   }
 
   function showHatch(mon) {
+    if (!mon || !mon.id) return;
+    var id = Number(mon.id);
+    var cached = HD.pokeapi ? HD.pokeapi.cached(id) : null;
+    var rec = cached;
+    var name = (cached && cached.name) || mon.name || HD.byId(id).name || "새 포켓몬";
+    var failed = false;
+
     var body = document.createElement("div");
-    body.className = "reward-pop";
-    body.innerHTML = '' +
-      '<div class="hatch-egg">' + HD.ART.egg(110) + "</div>" +
-      '<div style="font-size:22px">✨ 알이 부화했어! ✨</div>' +
-      ui.spriteHtml(mon, 130) +
-      '<div class="rp-title">' + ui.esc(mon.name) + "를 만났어!</div>" +
-      '<div class="rp-sub">포켓몬 마을에 새 친구가 생겼어요</div>' +
-      '<button class="btn blue" type="button" data-close="1" style="min-width:180px;margin-top:6px">마을에 놀러 가기 🏡</button>';
+    body.className = "reward-pop hatch-pop";
+
+    function paint() {
+      var art = (rec && rec.art) ? rec.art : null;
+      body.innerHTML = '' +
+        '<div class="hatch-egg">' + HD.ART.egg(96) + "</div>" +
+        '<div class="hatch-crack">✨ 알이 부화했어! ✨</div>' +
+        (art
+          ? '<div class="dex-art hatch-art"><img src="' + ui.esc(art) + '" alt="' + ui.esc(name) + '" data-pid="' + id + '" data-emoji="' + ui.esc(HD.byId(id).emoji) + '" data-step="0" decoding="async" onerror="HD.ui.artFail(this)"></div>'
+          : ui.spriteHtml({ id: id, name: name, emoji: mon.emoji }, 130)) +
+        '<div class="rp-title">' + ui.esc(name) + "를 만났어!</div>" +
+        (rec && rec.genus ? '<span class="dex-genus">' + ui.esc(rec.genus) + "</span>" : "") +
+        (rec && rec.types && rec.types.length ? '<div class="dex-types center">' + HD.pokeapi.typesHtml(rec.types) + "</div>" : "") +
+        (rec && rec.flavor ? '<p class="hatch-flavor">' + ui.esc(rec.flavor) + "</p>"
+          : (failed ? "" : '<p class="hatch-flavor muted">도감 설명을 불러오는 중…</p>')) +
+        '<div class="rp-sub">포켓몬 마을에 새 친구가 생겼어요</div>' +
+        '<div class="dex-actions center">' +
+          '<button class="btn small" type="button" data-act="cry"' + ((rec && rec.cry) ? "" : " disabled") + ">🔊 울음소리</button>" +
+          '<button class="btn small" type="button" data-act="say">🗣️ 이름 읽어주기</button>' +
+        "</div>" +
+        '<button class="btn blue" type="button" data-close="1" style="min-width:180px;margin-top:6px">마을에 놀러 가기 🏡</button>';
+    }
+    paint();
+
+    body.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest("[data-act]") : null;
+      if (!btn) return;
+      var act = btn.getAttribute("data-act");
+      if (act === "say") {
+        ui.speak(name + "!", "ko-KR");
+      } else if (act === "cry") {
+        if (!rec || !rec.cry) { ui.toast("울음소리를 아직 못 가져왔어요"); HD.sound.pop(); return; }
+        HD.pokeapi.playCry(rec.cry).then(null, function () {
+          // iPadOS Safari가 ogg를 못 틀면 읽어주기·효과음으로 대신한다
+          HD.sound.pop();
+          ui.speak(name + "!", "ko-KR");
+        });
+      }
+    });
+
     ui.confetti(40);
     HD.sound.sticker();
     ui.modal({ title: "새 포켓몬!", body: body, size: "sm" });
+
+    if (!cached && HD.pokeapi) {
+      HD.pokeapi.get(id).then(function (r) {
+        rec = r;
+        name = r.name || name;
+        paint();
+        if (HD.store.setPokemonName) HD.store.setPokemonName(id, r.name);
+      }, function () {
+        failed = true;
+        paint();
+      });
+    }
   }
 
   function giveSticker(reason, kind, opts) {
