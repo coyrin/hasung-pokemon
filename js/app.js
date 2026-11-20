@@ -58,7 +58,7 @@
         (art
           ? '<div class="dex-art hatch-art"><img src="' + ui.esc(art) + '" alt="' + ui.esc(nm || "새 친구") + '" data-pid="' + id + '" data-emoji="' + ui.esc(HD.byId(id).emoji) + '" data-step="0" decoding="async" onerror="HD.ui.artFail(this)"></div>'
           : ui.spriteHtml({ id: id, name: nm, emoji: mon.emoji }, 130)) +
-        '<div class="rp-title">' + (nm ? ui.esc(nm) + "를 만났어!" : "새 친구를 만났어!") + "</div>" +
+        '<div class="rp-title">' + (nm ? ui.esc(nm) + ui.josa(nm, "을", "를") + " 만났어!" : "새 친구를 만났어!") + "</div>" +
         (rec && rec.genus ? '<span class="dex-genus">' + ui.esc(rec.genus) + "</span>" : "") +
         (rec && rec.types && rec.types.length ? '<div class="dex-types center">' + HD.pokeapi.typesHtml(rec.types) + "</div>" : "") +
         flavorHtml() +

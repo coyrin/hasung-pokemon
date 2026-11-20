@@ -31,6 +31,16 @@
 
   function pad2(n) { return (n < 10 ? "0" : "") + n; }
 
+  // 받침에 맞춰 조사를 고른다 (파치래곤을 / 이브이를)
+  function josa(word, withBatchim, withoutBatchim) {
+    var s = String(word == null ? "" : word);
+    var code = s.charCodeAt(s.length - 1);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      return (code - 0xAC00) % 28 === 0 ? withoutBatchim : withBatchim;
+    }
+    return withBatchim;
+  }
+
   function clockParts(d) {
     var h = d.getHours();
     var ampm = h < 12 ? "오전" : "오후";
@@ -242,7 +252,7 @@
   }
 
   HD.ui = {
-    $: $, $$: $$, esc: esc, pad2: pad2,
+    $: $, $$: $$, esc: esc, pad2: pad2, josa: josa,
     clockParts: clockParts, dateKo: dateKo, timeLabel: timeLabel,
     spriteHtml: spriteHtml, spriteFail: spriteFail, spriteUrl: spriteUrl, artFail: artFail,
     toast: toast, confetti: confetti, sparkleAt: sparkleAt,
